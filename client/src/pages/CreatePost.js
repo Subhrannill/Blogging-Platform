@@ -2,6 +2,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import ApiBase from '../api/ApiBase';
 
 export default function CreatePost() {
   const [title, setTitle] = useState('');
@@ -18,7 +19,7 @@ export default function CreatePost() {
     data.set('content', content);
     data.set('file', files[0]);
 
-    const response = await fetch('http://localhost:4000/post', {
+    const response = await fetch(`${ApiBase}/post`, {
       method: 'POST',
       body: data,
       credentials: 'include',

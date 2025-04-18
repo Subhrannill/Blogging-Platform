@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { UserContext } from '../UserContext';
+import ApiBase from '../api/ApiBase';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ export default function LoginPage() {
 
   async function login(ev) {
     ev.preventDefault();
-    const response = await fetch('http://localhost:4000/login', {
+    const response = await fetch(`${ApiBase}/login`, {
       method: 'POST',
       body: JSON.stringify({ username, password }),
       headers: { 'Content-Type': 'application/json' },
@@ -18,7 +19,7 @@ export default function LoginPage() {
     });
 
     if (response.ok) {
-      const profileRes = await fetch('http://localhost:4000/profile', {
+      const profileRes = await fetch(`${ApiBase}/profile`, {
         credentials: 'include',
       });
       const userInfo = await profileRes.json();
