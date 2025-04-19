@@ -35,7 +35,7 @@ export default function CreatePost() {
         setRedirect(true);
       } else {
         const errorData = await response.json();
-        alert(errorData.message || 'Post creation failed');
+        toast.error(errorData.message || 'Post creation failed');
       }
     } catch (err) {
       toast.error('Network error occurred');

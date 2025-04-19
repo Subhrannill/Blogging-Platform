@@ -15,7 +15,7 @@ export default function LoginPage() {
     ev.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch(`${ApiBase}/login`, {
+      const response = await fetch(`${ApiBase}/auth/login`, {
         method: 'POST',
         body: JSON.stringify({ username, password }),
         headers: { 'Content-Type': 'application/json' },
@@ -23,7 +23,7 @@ export default function LoginPage() {
       });
 
       if (response.ok) {
-        const profileRes = await fetch(`${ApiBase}/profile`, {
+        const profileRes = await fetch(`${ApiBase}/auth/profile`, {
           credentials: 'include',
         });
         const userInfo = await profileRes.json();

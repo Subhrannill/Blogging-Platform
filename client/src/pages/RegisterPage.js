@@ -15,7 +15,7 @@ export default function RegisterPage() {
     ev.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch(`${ApiBase}/register`, {
+      const response = await fetch(`${ApiBase}/auth/register`, {
         method: 'POST',
         body: JSON.stringify({ username, password }),
         headers: { 'Content-Type': 'application/json' },
@@ -23,20 +23,25 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
-        const profileRes = await fetch(`${ApiBase}/profile`, {
+        // The backend now sets the cookie, we can directly fetch profile
+        const profileRes = await fetch(`${ApiBase}/auth/profile`, {
           credentials: 'include',
         });
-        const userInfo = await profileRes.json();
-        setUserInfo(userInfo);
-        toast.success('Registration successful, Login now');
-        setRedirect(true);
+
+        if (profileRes.ok) {
+          const userInfo = await profileRes.json();
+          setUserInfo(userInfo);
+          toast.success('Registration successful!');
+          setRedirect(true);
+        } else {
+          throw new Error('Failed to fetch profile');
+        }
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || 'Registration failed');
       }
     } catch (err) {
-      console.error('Registration error:', err);
-      alert('NETWORK ERROR: Try again later');
+      toast.error(err.message || 'Network error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +54,7 @@ export default function RegisterPage() {
   return (
     <div className='min-h-screen bg-white p-4 flex items-center justify-center'>
       <div className='w-full max-w-md border-4 border-black shadow-[8px_8px_0_0_black] bg-white p-8'>
-        {/* Brutalist Header */}
+        {/* Header */}
         <div className='mb-8 text-center border-b-4 border-black pb-4'>
           <h1 className='text-3xl font-bold uppercase tracking-tighter'>
             REGISTER
@@ -119,7 +124,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        {/* Brutalist Footer */}
+        {/* Footer */}
         <div className='mt-6 text-center font-mono text-sm border-t-2 border-black pt-4'>
           <p>
             ALREADY MEMBER?{' '}
