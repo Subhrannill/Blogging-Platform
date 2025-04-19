@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 4000;
 app.use(
   cors({
     origin: 'https://blank-ink.vercel.app',
-    credentials: true, // allow cookies
+    credentials: true,
   })
 );
 app.use(express.json());
@@ -92,8 +92,8 @@ app.post('/logout', (req, res) => {
   res
     .cookie('token', '', {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
+      sameSite: 'none',
+      secure: process.env.NODE_ENV === 'production', // Set to true only in production (for HTTPS)
     })
     .json('ok');
 });

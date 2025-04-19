@@ -1,56 +1,104 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { UserContext } from '../UserContext';
-import { Link } from 'react-router-dom';
 import ApiBase from '../api/ApiBase';
 
 export default function PostPage() {
   const [postInfo, setPostInfo] = useState(null);
   const { userInfo } = useContext(UserContext);
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    fetch(`${ApiBase}/post/${id}`).then(response => {
-      response.json().then(postInfo => {
+    fetch(`${ApiBase}/post/${id}`)
+      .then(response => response.json())
+      .then(postInfo => {
         setPostInfo(postInfo);
+        setIsLoading(false);
       });
-    });
   }, [id]);
 
-  if (!postInfo) return '';
+  if (isLoading) {
+    return (
+      <div className='min-h-screen flex items-center justify-center'>
+        <div className='border-4 border-black p-8 text-center'>
+          <div className='border-2 border-black p-4 inline-block'>
+            <div className='border-b-2 border-black w-8 h-8 animate-spin mx-auto'></div>
+          </div>
+          <p className='mt-4 uppercase font-mono'>LOADING RAW CONTENT...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!postInfo) return null;
 
   return (
-    <div className='post-page'>
-      <h1>{postInfo.title}</h1>
-      <time>{format(new Date(postInfo.createdAt), 'MMM d, yyyy HH:mm')}</time>
-      <div className='author'>by @{postInfo.author.username}</div>
-      {userInfo.id === postInfo.author._id && (
-        <div className='edit-row'>
-          <Link className='edit-btn' to={`/edit/${postInfo._id}`}>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
-              />
-            </svg>
-            Edit this post
+    <div className='max-w-4xl mx-auto px-4 py-8 border-x-4 border-black min-h-screen'>
+      {/* Header */}
+      <header className='border-b-4 border-black mb-8 pb-6'>
+        <h1 className='text-4xl font-bold uppercase tracking-tighter text-center'>
+          {postInfo.title}
+        </h1>
+
+        <div className='flex items-center justify-center space-x-4 mt-4 font-mono'>
+          <div className='flex items-center'>
+            <div className='w-8 h-8 border-2 border-black bg-purple-600 flex items-center justify-center text-white font-bold mr-2'>
+              {postInfo.author.username.charAt(0).toUpperCase()}
+            </div>
+            <span>@{postInfo.author.username}</span>
+          </div>
+          <span>•</span>
+          <time>{format(new Date(postInfo.createdAt), 'MMM d, yyyy')}</time>
+        </div>
+      </header>
+
+      {/* Edit Button */}
+      {userInfo?.id === postInfo.author._id && (
+        <div className='mb-8 text-center'>
+          <Link
+            to={`/edit/${postInfo._id}`}
+            className='inline-block px-6 py-2 bg-black text-white font-mono uppercase border-2 border-black hover:bg-purple-800 transition-colors'>
+            EDIT POST
           </Link>
         </div>
       )}
-      <div className='image'>
-        <img src={`${ApiBase}/${postInfo.cover}`} alt='' />
+
+      {/* Featured Image */}
+      <div className='mb-8 border-4 border-black max-w-2xl mx-auto'>
+        <img
+          src={`${ApiBase}/${postInfo.cover}`}
+          alt={postInfo.title}
+          className='w-full h-auto object-cover'
+        />
       </div>
-      <div
-        className='content'
-        dangerouslySetInnerHTML={{ __html: postInfo.content }}
-      />
+
+      {/* Post Content */}
+      <article className='prose prose-lg max-w-none font-mono mb-12'>
+        <div
+          className='border-l-4 border-purple-600 pl-4'
+          dangerouslySetInnerHTML={{ __html: postInfo.content }}
+        />
+      </article>
+
+      {/* Brutalist Author Card */}
+      <div className='border-4 border-black p-6'>
+        <div className='flex items-center'>
+          <div className='w-12 h-12 border-2 border-black bg-purple-600 flex items-center justify-center text-white font-bold text-xl mr-4'>
+            {postInfo.author.username.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h3 className='font-bold uppercase'>@{postInfo.author.username}</h3>
+            <p className='font-mono text-sm'>AUTHOR</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className='border-t-4 border-black mt-12 pt-4 text-center font-mono text-sm'>
+        <p>© {new Date().getFullYear()} BLANKINK — CREATE FIRE</p>
+      </footer>
     </div>
   );
 }
