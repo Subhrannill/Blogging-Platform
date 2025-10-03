@@ -154,7 +154,7 @@ a svg{
   height:20px;
 } */
 
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -400,4 +400,4 @@ div.post-page a.edit-btn:hover {
 
 a svg {
   height: 20px;
-}
+} */
