@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(
   cors({
-    origin: 'https://blogging-platform-far4.vercel.app/',
+    origin: 'https://blogging-platform-far4.vercel.app',
     credentials: true,
   })
 );
